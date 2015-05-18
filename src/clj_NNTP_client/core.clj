@@ -52,10 +52,10 @@
 (defn list-groups
   "List groups"
   ([^NNTPClient client]
-  (let [info (map  bean ^NewsgroupInfo (.listNewsgroups client))]
+  (let [info (map  #(dissoc (bean %) :class) ^NewsgroupInfo (.listNewsgroups client))]
     info))
   ([^NNTPClient client ^String pattern]
-  (let [info (map  bean ^NewsgroupInfo (.listNewsgroups client pattern))]
+  (let [info (map #(dissoc (bean %) :class) ^NewsgroupInfo (.listNewsgroups client pattern))]
     info))
   )
 
@@ -65,7 +65,7 @@
   [^NNTPClient client group]
   (let [info (NewsgroupInfo.)
         _ (.selectNewsgroup client group info)]
-    (bean info)))
+    (dissoc (bean info) :class)))
 
 
 (defn retrieve-article-message-ids
