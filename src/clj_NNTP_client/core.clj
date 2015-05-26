@@ -70,8 +70,12 @@
 
 (defn retrieve-article-message-ids
   "Retrieve the Message-ID header for the articles in the current group specified by the start and end range"
-  [^NNTPClient client start end]
-  (line-seq (.retrieveHeader client "Message-ID" start end)))
+  ([^NNTPClient client start end]
+   (line-seq (.retrieveHeader client "Message-ID" start end)))
+
+  ([^NNTPClient client info]
+   (line-seq (.retrieveHeader client "Message-ID" (:firstArticleLong info) (:lastArticleLong info))))
+)
 
 
 (defn get-message-header
@@ -82,16 +86,22 @@
 
 (defn get-message-body
   "Retrieve the message body"
-  [^NNTPClient client msg-id]
+  [^NNTPClient client ^String msg-id]
   (slurp (.retrieveArticleBody client msg-id)))
 
 
 (defn get-message
   "Retrieve the message header and body and return the content as a map"
-  [^NNTPClient client msg-id]
+  [^NNTPClient client ^String msg-id]
   (let [header (get-message-header client msg-id)
         body (get-message-body client msg-id)]
     { :header header
       :body body
       }
     ))
+
+
+(defn get-article
+  "Retrieve article by message number"
+  ([^NNTPClient client ^long msg-number]
+   (slurp (.retrieveArticle client msg-number))))
